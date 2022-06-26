@@ -2,15 +2,6 @@
 from PIL import Image, ImageDraw, ImageFont  # Module pour les images
 import xlrd  # module pour ouvrir l'excel
 
-# Ouverture du Fichier Excel
-document = xlrd.open_workbook("./data.xls")
-
-# Listing des différents fonds de badges
-backgroundChauffeur = Image.open("./backgrounds/chauffeur.png")
-backgroundStaff = Image.open("./backgrounds/staff.png")
-backgroundPilote = Image.open("./backgrounds/pilote.png")
-backgroundEntreprise = Image.open("./backgrounds/entreprise.png")
-
 # colors
 dark_blue = (27, 53, 81)
 light_blue = (93, 188, 210)
@@ -21,9 +12,40 @@ yellow_green = (232, 240, 165)
 green = (91, 185, 67)
 
 # Fonts
-MainFont = r"./fonts/DINBold.ttf"
-SubtitleFont = r"./fonts/DINLight.ttf"
-SubtitleColor = dark_blue
+MAIN_FONT = r"./fonts/DINBold.ttf"
+SUB_FONT = r"./fonts/DINLight.ttf"
+SECONDARY_COLOR = dark_blue
+
+# Fichier Excel avec les noms
+DATA_FILE_NAME = "./data.xls"
+
+# Dossier où enregistrer les images créées
+OUTPUT_DIR = "./badges"
+
+# Paramètres pour chaque type de badge
+TYPES_SETTINGS = {
+    "chauffeur": {
+        "sheet_index": 0,
+        "color": dark_orange,
+        "bg": "backgrounds/chauffeur.png",
+    },
+    "pilote": {
+        "sheet_index": 1,
+        "color": green,
+        "bg": "backgrounds/pilote.png",
+    },
+    "staff": {
+        "sheet_index": 2,
+        "color": orange,
+        "bg": "backgrounds/staff.png",
+    },
+    "entreprise": {
+        "sheet_index": 3,
+        "color": dark_blue,
+        "bg": "backgrounds/entreprise.png",
+    }
+}
+
 
 # Fonctions utilitaires
 
@@ -31,14 +53,14 @@ def center_text(img, font, text1, text2, fill, text1_is_Prenom):
     """
     It takes an image, a font, two strings, and a fill color, and returns an image
     with the two strings centered on the image
-    
+
     Args:
       img: The image to draw on
       font: The font to use.
       text1: The first line of text to be drawn on the image.
       text2: The text to be displayed on the image.
       fill: The color of the text.
-    
+
     Returns:
       The image with the text on it.
     """
@@ -60,7 +82,7 @@ def add_text(img, color, text1, text2, font, font_size, is_staff, text1_is_Preno
     """
     It takes an image, a color, two strings, a font, and a font size, and returns an
     image with the two strings centered on the image
-    
+
     Args:
       img: the image to add text to
       color: The color of the text.
@@ -68,7 +90,7 @@ def add_text(img, color, text1, text2, font, font_size, is_staff, text1_is_Preno
       text2: The text to be displayed on the image.
       font: the font file to use
       font_size: The size of the font.
-    
+
     Returns:
       The image with the text added.
     """
@@ -96,7 +118,7 @@ def write_image(background, color1, color2, Prenom, Nom, text3, is_staff):
     It takes in a background image, two colors, a first name, a last name, and a
     subtitle, and returns an image with the first name and last name in the first
     color and the subtitle in the second color
-    
+
     Args:
       background: the image to write on
       color1: The color of the first line of text
@@ -104,174 +126,89 @@ def write_image(background, color1, color2, Prenom, Nom, text3, is_staff):
       Prenom: First name
       Nom: Last name
       text3: The text that will be displayed on the image
-    
+
     Returns:
       The background image with the text added to it.
     """
-    add_text(background, color1, Prenom, Nom, MainFont, 45, is_staff, True)
-    add_text(background, color2, text3, '', SubtitleFont, 25, is_staff, False)
+    add_text(background, color1, Prenom, Nom, MAIN_FONT, 45, is_staff, True)
+    add_text(background, color2, text3, '', SUB_FONT, 25, is_staff, False)
     return background
 
+
 # Fonction principale
-
-TYPES_SETTINGS = {
-    "chauffeur": {
-        "sheet_index": 0
-    },
-    "pilote": {
-        "sheet_index": 1
-    },
-    "staff": {
-        "sheet_index": 2
-    },
-    "entreprise": {
-        "sheet_index": 3
-    }
-}
-
 def main(type):
+    """Open the Excel file, reads the data, and generates the badges
+    
+    Args:
+      type: The type of badge you want to create.
+    """
     settings = TYPES_SETTINGS[type]
-    feuille_i = document.sheet_by_index(settings["sheet_index"])
-    rows = feuille_i.nrows
-    color1 = orange
-    background = backgroundStaff
-    for r in range(1, rows):
-        Prenom = feuille_i.cell_value(rowx=r, colx=0)
-        Nom = feuille_i.cell_value(rowx=r, colx=1)
-        text3 = feuille_i.cell_value(rowx=r, colx=2)
-        img_name = 'Badge' + Nom + Prenom + '.png'
-        is_staff = type == "staff"
-        background = write_image(
-            background, color1, SubtitleColor, Prenom, Nom, text3, is_staff)
-        background.save(img_name)
-        background = Image.open(r"./backgrounds/staff.png")
+    document = xlrd.open_workbook(DATA_FILE_NAME)
+    sheet = document.sheet_by_index(settings["sheet_index"])
+    nb_rows = sheet.nrows
+    primary_color = settings["color"]
+    background_file_name = settings["bg"]
+    for r in range(1, nb_rows):
+        given_name = sheet.cell_value(rowx=r, colx=0)
+        family_name = sheet.cell_value(rowx=r, colx=1)
+        role = sheet.cell_value(rowx=r, colx=2)
+        image = Image.open(background_file_name)
+        image = write_image(
+            image,
+            primary_color,
+            SECONDARY_COLOR,
+            given_name,
+            family_name,
+            role,
+            type == "staff"
+        )
+        file_name = f'{OUTPUT_DIR}/Badge {given_name} {family_name}.png'
+        image.save(file_name)
+
 
 # Commande lors de l'exécution du programme
 if __name__ == '__main__':
     print('Vous avez plusieurs possibilités de commande : \n 1 : Création de badges pour les chauffeurs uniquement \n 2 : Création de badges pour les pilotes uniquement \n 3 : Création de badges pour l’équipe organisatrice uniquement \n 4 : Création de badges pour les entreprises uniquement \n 5 : Création de badges pour tout le monde \n 6 : Création de badge pour une seule personne')
-    Commande = input("Entrez votre commande: ")
-    print(Commande)
-    if Commande == '1':  # Chauffeur
-        feuille_i = document.sheet_by_index(0)
-        rows = feuille_i.nrows
-        text3 = ''
-        color1 = dark_orange
-        background = backgroundChauffeur
-        for r in range(1, rows):
-            Prenom = feuille_i.cell_value(rowx=r, colx=0)
-            Nom = feuille_i.cell_value(rowx=r, colx=1)
-            img_name = 'Badge' + Nom + Prenom + '.png'
-            background = write_image(
-                background, color1, SubtitleColor, Prenom, Nom, text3)
-            background.save(img_name)
-            background = Image.open(r"./backgroundChauffeur.png")
-    if Commande == '2':  # Pilote
-        feuille_i = document.sheet_by_index(1)
-        rows = feuille_i.nrows
-        color1 = green
-        background = backgroundPilote
-        for r in range(1, rows):
-            Prenom = feuille_i.cell_value(rowx=r, colx=0)
-            Nom = feuille_i.cell_value(rowx=r, colx=1)
-            text3 = feuille_i.cell_value(rowx=r, colx=2)
-            img_name = 'Badge' + Nom + Prenom + '.png'
-            background = write_image(background, color1, SubtitleColor, Prenom,
-                                     Nom, text3)
-            background.save(img_name)
-            background = Image.open(r"./backgroundPilote.png")
-    if Commande == '3':  # Equipe Organisatrice
-        main("staff")
-    if Commande == '4':  # Entreprise
-        feuille_i = document.sheet_by_index(3)
-        rows = feuille_i.nrows
-        background = backgroundEntreprise
-        for r in range(1, rows):
-            Prenom = feuille_i.cell_value(rowx=r, colx=0)
-            Nom = feuille_i.cell_value(rowx=r, colx=1)
-            text3 = feuille_i.cell_value(rowx=r, colx=2)
-            img_name = 'Badge' + Nom + Prenom + '.png'
-            color1 = dark_blue
-            background = write_image(
-                background, color1, SubtitleColor, Prenom, Nom, text3)
-            background.save(img_name)
-            background = Image.open(r"./backgroundEntreprise.png")
-    if Commande == '5':  # Tout l'excel
-        feuille_i = document.sheet_by_index(0)  # CHauffeur
-        rows = feuille_i.nrows
-        text3 = ''
-        color1 = dark_orange
-        background = backgroundChauffeur
-        for r in range(1, rows):
-            Prenom = feuille_i.cell_value(rowx=r, colx=0)
-            Nom = feuille_i.cell_value(rowx=r, colx=1)
-            img_name = 'Badge' + Nom + Prenom + '.png'
-            background = write_image(
-                background, color1, SubtitleColor, Prenom, Nom, text3)
-            background.save(img_name)
-            background = Image.open(r"./backgroundChauffeur.png")
-        feuille_i = document.sheet_by_index(1)  # Pilote
-        rows = feuille_i.nrows
-        color1 = green
-        background = backgroundPilote
-        for r in range(1, rows):
-            Prenom = feuille_i.cell_value(rowx=r, colx=0)
-            Nom = feuille_i.cell_value(rowx=r, colx=1)
-            text3 = feuille_i.cell_value(rowx=r, colx=2)
-            img_name = 'Badge' + Nom + Prenom + '.png'
-            background = write_image(background, color1, SubtitleColor, Prenom,
-                                     Nom, text3)
-            background.save(img_name)
-            background = Image.open(r"./backgroundPilote.png")
-        feuille_i = document.sheet_by_index(2)  # Equipe Organisatrice
-        rows = feuille_i.nrows
-        color1 = orange
-        background = backgroundStaff
-        for r in range(1, rows):
-            Prenom = feuille_i.cell_value(rowx=r, colx=0)
-            Nom = feuille_i.cell_value(rowx=r, colx=1)
-            text3 = feuille_i.cell_value(rowx=r, colx=2)
-            img_name = 'Badge' + Nom + Prenom + '.png'
-            background = write_image(
-                background, color1, SubtitleColor, Prenom, Nom, text3)
-            background.save(img_name)
-            background = Image.open(r"./backgroundStaff.png")
-        feuille_i = document.sheet_by_index(3)  # Entreprise
-        rows = feuille_i.nrows
-        background = backgroundEntreprise
-        for r in range(1, rows):
-            Prenom = feuille_i.cell_value(rowx=r, colx=0)
-            Nom = feuille_i.cell_value(rowx=r, colx=1)
-            text3 = feuille_i.cell_value(rowx=r, colx=2)
-            img_name = 'Badge' + Nom + Prenom + '.png'
-            color1 = dark_blue
-            background = write_image(
-                background, color1, SubtitleColor, Prenom, Nom, text3)
-            background.save(img_name)
-            background = Image.open(r"./backgroundEntreprise.png")
-    if Commande == '6':  # Un seul nom
-        Prenom = input('Prénom: ')
-        Nom = input('Nom en Majuscule:')
-        img_name = 'Badge' + Nom + Prenom + '.png'
+    input_cmd = input("Entrez votre commande: ")
+    if input_cmd == '1': main("chauffeur")
+    elif input_cmd == '2': main("pilote")
+    elif input_cmd == '3': main("staff")
+    elif input_cmd == '4': main("entreprise")
+    elif input_cmd == '5':  # Tout l'excel
+        for type in TYPES_SETTINGS:
+            main(type)
+    elif input_cmd == '6':  # Un seul nom
+        given_name = input('Prénom: ')
+        family_name = input('Nom en Majuscule: ')
         print('Vous avez plusieurs possibilités de commande : \n 1 : Chauffeur \n 2 : Pilote \n 3 : Equipe Organisatrice \n 4 : Entreprise')
-        # renvoie une chaîne de carctère
-        Role = input('Entrez votre commande : ')
-        print(Role)
-        if Role == '1':  # Chauffeur
-            text3 = ''
-            color1 = dark_orange
-            background = backgroundChauffeur
-        if Role == '2':  # Pilote
-            text3 = ''
-            color1 = green
-            background = backgroundPilote
-        if Role == '3':  # Equipe Organisatrice
-            text3 = input('Entrez le rôle: ')
-            color1 = orange
-            background = backgroundStaff
-        if Role == '4':  # Entreprise
+        # lire le choix
+        input_type = input('Entrez votre commande : ')
+        if input_type == '1': type = "chauffeur"
+        elif input_type == '2': type = "pilote"
+        elif input_type == "3": type = "staff"
+        elif input_type == '4': type = "entreprise"
+        else: raise Exception("Choix invalide !")
+        # définir les paramètres
+        settings = TYPES_SETTINGS[type]
+        primary_color = settings["color"]
+        background_file_name = settings["bg"]
+        role = ""
+        if input_type == '3':  # Equipe Organisatrice
+            role = input('Entrez le rôle: ')
+        if input_type == '4':  # Entreprise
             text3 = input('Entrez le nom de l’entreprise : ')
-            color1 = dark_blue
-            background = backgroundEntreprise
-        background = write_image(
-            background, color1, SubtitleColor, Prenom, Nom, text3)
-        background.save(img_name)
+        # créer l'image
+        image = Image.open(background_file_name)
+        image = write_image(
+            image,
+            primary_color,
+            SECONDARY_COLOR,
+            given_name,
+            family_name,
+            role,
+            type == "staff"
+        )
+        file_name = f'Badge {given_name} {family_name}.png'
+        image.save(file_name)
+    else:
+        raise Exception("Choix invalide ! Veuillez entrez un nombre entre 1 et 6.")
