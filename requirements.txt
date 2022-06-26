@@ -1,0 +1,4 @@
+pillow
+xlrd
+reportlab
+PyPDF2
