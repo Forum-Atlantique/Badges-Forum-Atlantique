@@ -12,8 +12,8 @@ yellow_green = (232, 240, 165)
 green = (91, 185, 67)
 
 # Fonts
-MAIN_FONT = r"./fonts/DINBold.ttf"
-SUB_FONT = r"./fonts/DINLight.ttf"
+TITLE_FONT = r"./fonts/DINBold.ttf"
+TEXT_FONT = r"./fonts/DINLight.ttf"
 SECONDARY_COLOR = dark_blue
 
 # Fichier Excel avec les noms
@@ -49,7 +49,7 @@ TYPES_SETTINGS = {
 
 # Fonctions utilitaires
 
-def center_text(img, font, text1, text2, fill, text1_is_Prenom):
+def center_text(img, font, text1, text2, fill, test1_is_name):
     """
     It takes an image, a font, two strings, and a fill color, and returns an image
     with the two strings centered on the image
@@ -68,7 +68,7 @@ def center_text(img, font, text1, text2, fill, text1_is_Prenom):
     w, h = img.size  # get width and height of image
     t1_width, t1_height = draw.textsize(text1, font)  # Get text1 size
     t2_width, t2_height = draw.textsize(text2, font)
-    if text1_is_Prenom:
+    if test1_is_name:
         p1 = ((w-t1_width)/2, h // 3)  # H-center align text1
     else:
         p1 = ((w-t1_width)/2, h // 3 + h//3)
@@ -78,7 +78,7 @@ def center_text(img, font, text1, text2, fill, text1_is_Prenom):
     return img
 
 
-def add_text(img, color, text1, text2, font, font_size, is_staff, text1_is_Prenom):
+def add_text(img, color, text1, text2, font, font_size, is_staff, test1_is_name):
     """
     It takes an image, a color, two strings, a font, and a font size, and returns an
     image with the two strings centered on the image
@@ -100,7 +100,7 @@ def add_text(img, color, text1, text2, font, font_size, is_staff, text1_is_Preno
         w, h = img.size  # get width and height of image
         t1_width, t1_height = draw.textsize(text1, font)  # Get text1 size
         t2_width, t2_height = draw.textsize(text2, font)
-        if text1_is_Prenom:
+        if test1_is_name:
             # Plus le deuxième terme est grand, plus le texte est bas
             text1_offset = ((w-t1_width)/2, h // 4)
         else:
@@ -109,11 +109,11 @@ def add_text(img, color, text1, text2, font, font_size, is_staff, text1_is_Preno
         draw.text(text1_offset, text1, color, font)
         draw.text(text2_offset, text2, color, font)
     else:
-        center_text(img, font, text1, text2, color, text1_is_Prenom)
+        center_text(img, font, text1, text2, color, test1_is_name)
     return img
 
 
-def write_image(background, color1, color2, Prenom, Nom, text3, is_staff):
+def write_image(background, color1, color2, given_name, family_name, role, is_staff):
     """
     It takes in a background image, two colors, a first name, a last name, and a
     subtitle, and returns an image with the first name and last name in the first
@@ -130,8 +130,8 @@ def write_image(background, color1, color2, Prenom, Nom, text3, is_staff):
     Returns:
       The background image with the text added to it.
     """
-    add_text(background, color1, Prenom, Nom, MAIN_FONT, 45, is_staff, True)
-    add_text(background, color2, text3, '', SUB_FONT, 25, is_staff, False)
+    add_text(background, color1, given_name, family_name, TITLE_FONT, 45, is_staff, True)
+    add_text(background, color2, role, '', TEXT_FONT, 25, is_staff, False)
     return background
 
 
