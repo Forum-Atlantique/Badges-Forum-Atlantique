@@ -113,7 +113,7 @@ def add_text(img, color, text1, text2, font, font_size, is_staff, test1_is_name)
     return img
 
 
-def write_image(background, color1, color2, given_name, family_name, role, is_staff):
+def write_image(background, color1, color2, first_name, last_name, role, is_staff):
     """
     It takes in a background image, two colors, a first name, a last name, and a
     subtitle, and returns an image with the first name and last name in the first
@@ -130,7 +130,7 @@ def write_image(background, color1, color2, given_name, family_name, role, is_st
     Returns:
       The background image with the text added to it.
     """
-    add_text(background, color1, given_name, family_name, TITLE_FONT, 45, is_staff, True)
+    add_text(background, color1, first_name, last_name, TITLE_FONT, 45, is_staff, True)
     add_text(background, color2, role, '', TEXT_FONT, 25, is_staff, False)
     return background
 
@@ -149,20 +149,20 @@ def main(type):
     primary_color = settings["color"]
     background_file_name = settings["bg"]
     for r in range(1, nb_rows):
-        given_name = sheet.cell_value(rowx=r, colx=0)
-        family_name = sheet.cell_value(rowx=r, colx=1)
+        first_name = sheet.cell_value(rowx=r, colx=0)
+        last_name = sheet.cell_value(rowx=r, colx=1)
         role = sheet.cell_value(rowx=r, colx=2)
         image = Image.open(background_file_name)
         image = write_image(
             image,
             primary_color,
             SECONDARY_COLOR,
-            given_name,
-            family_name,
+            first_name,
+            last_name,
             role,
             type == "staff"
         )
-        file_name = f'{OUTPUT_DIR}/Badge {given_name} {family_name}.png'
+        file_name = f'{OUTPUT_DIR}/Badge {first_name} {last_name}.png'
         image.save(file_name)
 
 
@@ -178,8 +178,8 @@ if __name__ == '__main__':
         for type in TYPES_SETTINGS:
             main(type)
     elif input_cmd == '6':  # Un seul nom
-        given_name = input('Prénom: ')
-        family_name = input('Nom en Majuscule: ')
+        first_name = input('Prénom: ')
+        last_name = input('Nom en Majuscule: ')
         print('Vous avez plusieurs possibilités de commande : \n 1 : Chauffeur \n 2 : Pilote \n 3 : Equipe Organisatrice \n 4 : Entreprise')
         # lire le choix
         input_type = input('Entrez votre commande : ')
@@ -203,12 +203,12 @@ if __name__ == '__main__':
             image,
             primary_color,
             SECONDARY_COLOR,
-            given_name,
-            family_name,
+            first_name,
+            last_name,
             role,
             type == "staff"
         )
-        file_name = f'Badge {given_name} {family_name}.png'
+        file_name = f'Badge {first_name} {last_name}.png'
         image.save(file_name)
     else:
         raise Exception("Choix invalide ! Veuillez entrez un nombre entre 1 et 6.")
