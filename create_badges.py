@@ -161,6 +161,7 @@ def create_image(
     """
 
     image = Image.open(background_file_name)
+    last_name = last_name.upper() # convert as uppercase
     add_text(image, color1, first_name, last_name,
              TITLE_FONT, 45, is_staff, True)
     add_text(image, color2, role, '', TEXT_FONT, 25, is_staff, False)

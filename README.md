@@ -29,8 +29,8 @@ entreprises pour le Forum Atlantique
     ```bash
     python3 create_badges.py
     ```
-* Suivez les instructions
-* Les images au format PNG apparaissent dans le dossier `bages/` (par défaut)
+* Suivez les instructions dans le terminal
+* Les images au format PNG apparaissent dans le dossier `badges/` (par défaut)
 
 ## Générer le PDF
 

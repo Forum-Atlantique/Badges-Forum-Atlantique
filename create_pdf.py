@@ -15,6 +15,9 @@ badges = create_all_badges(save_file = False)
 IMG_WIDTH = 10*CM
 IMG_HEIGHT = 6.5*CM
 
+# draw the PDF - to know more about how to add texts and other stuff :
+# https://docs.reportlab.com/reportlab/userguide/ch2_graphics/#the-tools-the-draw-operations
+
 pdf = canvas.Canvas(OUTPUT_FILE, A4)
 for i in range(len(badges)):
     badge = badges[i]
