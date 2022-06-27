@@ -40,3 +40,16 @@ entreprises pour le Forum Atlantique
     python3 create_pdf.py
     ```
 * Le PDF est créé avec le nom `badges_FA.pdf` (par défaut)
+
+## Reste à faire
+
+Ci-dessous une liste d'améliorations possibles pour le projet :
+* écrire le texte "Equipe Organisatrice" depuis le script python plutôt que sur
+    l'image de fond (ça permettra à l'avenir de changer plus facilement le
+    background s'ils en ont envie)
+* réajuster les espacements du texte pour les entreprises (et peut-être les
+    autres types aussi mais j'ai noté que c'était pas ouf pour les entreprises)
+* ajouter le nom de l'entreprise qu'ils pilotent pour les élèves pilotes
+* super-bonus : générer tout le texte directement sur le PDF et ne plus utiliser
+    d'images intermédiaires (ça permettra d'avoir un format vectoriel pour le
+    PDF et donc une bien meilleure qualité)
