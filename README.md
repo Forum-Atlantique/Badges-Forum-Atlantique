@@ -22,7 +22,21 @@ entreprises pour le Forum Atlantique
 
 # Utilisation
 
-* Pour générer les images au format PNG depuis le fichier excel :
+## Générer les images PNG :
+
+* Dans le fichier `create_badges.py`, modifiez le nom du fichier excel d'entrée.
+* Exécutez la commande :
     ```bash
     python3 create_badges.py
     ```
+* Suivez les instructions
+* Les images au format PNG apparaissent dans le dossier `bages/` (par défaut)
+
+## Générer le PDF
+
+* Dans le fichier `create_badges.py`, modifiez le nom du fichier excel d'entrée.
+* Exécutez la commande :
+    ```bash
+    python3 create_pdf.py
+    ```
+* Le PDF est créé avec le nom `badges_FA.pdf` (par défaut)

@@ -139,7 +139,8 @@ def create_image(
     first_name: str,
     last_name: str,
     role: str,
-    is_staff: bool
+    is_staff: bool,
+    save_file: bool = True
 ):
     """
     It takes in a background image, two colors, a first name, a last name, and a
@@ -164,10 +165,12 @@ def create_image(
              TITLE_FONT, 45, is_staff, True)
     add_text(image, color2, role, '', TEXT_FONT, 25, is_staff, False)
     file_name = f'{OUTPUT_DIR}/Badge {first_name} {last_name}.png'
-    image.save(file_name)
+    if save_file:
+        image.save(file_name)
+    return image
 
 
-def create_badges_by_type(type: str):
+def create_badges_by_type(type: str, save_file = True):
     """Open the Excel file, reads the data, and generates the badges
 
     Args:
@@ -180,26 +183,32 @@ def create_badges_by_type(type: str):
     nb_rows = sheet.nrows
     primary_color = settings["color"]
     background_file_name = settings["bg"]
+    images = []
     for r in range(1, nb_rows):
         first_name = sheet.cell_value(rowx=r, colx=0)
         last_name = sheet.cell_value(rowx=r, colx=1)
         role = sheet.cell_value(rowx=r, colx=2)
-        create_image(
+        image = create_image(
             background_file_name,
             primary_color,
             SECONDARY_COLOR,
             first_name,
             last_name,
             role,
-            type == "staff"
+            type == "staff",
+            save_file
         )
+        images.append(image)
+    return images
 
 
-def create_all_badges():
+def create_all_badges(save_file = True):
     """Create all the badges from the excel document"""
 
+    images = []
     for type in TYPES_SETTINGS:
-        create_badges_by_type(type)
+        images += create_badges_by_type(type, save_file)
+    return images
 
 
 def create_one_badge():
@@ -224,7 +233,7 @@ def create_one_badge():
     if type == "entreprise":  # Entreprise
         role = input('Entrez le nom de l’entreprise : ')
     # créer l'image
-    create_image(
+    image = create_image(
         background_file_name,
         primary_color,
         SECONDARY_COLOR,
@@ -233,6 +242,7 @@ def create_one_badge():
         role,
         type == "staff"
     )
+    return image
 
 
 # script uniquement appelé lorsque ce fichier est directement exécuté
