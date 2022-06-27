@@ -47,9 +47,14 @@ TYPES_SETTINGS = {
 }
 
 
-# Fonctions utilitaires
-
-def center_text(img, font, text1, text2, fill, test1_is_name):
+def center_text(
+    img: Image,
+    font: str,
+    text1: str,
+    text2: str,
+    fill: str,
+    test1_is_name: bool
+):
     """
     It takes an image, a font, two strings, and a fill color, and returns an image
     with the two strings centered on the image
@@ -60,10 +65,12 @@ def center_text(img, font, text1, text2, fill, test1_is_name):
       text1: The first line of text to be drawn on the image.
       text2: The text to be displayed on the image.
       fill: The color of the text.
+      text1_is_name: Indicates if the text1 variable represents the first name
 
     Returns:
       The image with the text on it.
     """
+
     draw = ImageDraw.Draw(img)  # Initialize drawing on the image
     w, h = img.size  # get width and height of image
     t1_width, t1_height = draw.textsize(text1, font)  # Get text1 size
@@ -78,26 +85,38 @@ def center_text(img, font, text1, text2, fill, test1_is_name):
     return img
 
 
-def add_text(img, color, text1, text2, font, font_size, is_staff, test1_is_name):
+def add_text(
+    image: Image,
+    color: tuple,
+    text1: str,
+    text2: str,
+    font: str,
+    font_size: int,
+    is_staff: bool,
+    test1_is_name: bool
+):
     """
     It takes an image, a color, two strings, a font, and a font size, and returns an
     image with the two strings centered on the image
 
     Args:
-      img: the image to add text to
+      image: the image to add text to
       color: The color of the text.
       text1: The first line of text to be added to the image.
       text2: The text to be displayed on the image.
       font: the font file to use
       font_size: The size of the font.
+      is_staff: Indicates if the image is for staff format
+      text1_is_name: Indicates if the text1 variable represents the first name
 
     Returns:
       The image with the text added.
     """
-    draw = ImageDraw.Draw(img)
+
+    draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(font, size=font_size)
     if is_staff:
-        w, h = img.size  # get width and height of image
+        w, h = image.size  # get width and height of image
         t1_width, t1_height = draw.textsize(text1, font)  # Get text1 size
         t2_width, t2_height = draw.textsize(text2, font)
         if test1_is_name:
@@ -109,39 +128,52 @@ def add_text(img, color, text1, text2, font, font_size, is_staff, test1_is_name)
         draw.text(text1_offset, text1, color, font)
         draw.text(text2_offset, text2, color, font)
     else:
-        center_text(img, font, text1, text2, color, test1_is_name)
-    return img
+        center_text(image, font, text1, text2, color, test1_is_name)
+    return image
 
 
-def write_image(background, color1, color2, first_name, last_name, role, is_staff):
+def create_image(
+    background_file_name: str,
+    color1: tuple,
+    color2: tuple,
+    first_name: str,
+    last_name: str,
+    role: str,
+    is_staff: bool
+):
     """
     It takes in a background image, two colors, a first name, a last name, and a
     subtitle, and returns an image with the first name and last name in the first
     color and the subtitle in the second color
 
     Args:
-      background: the image to write on
+      background_file_name: the name of the background file
       color1: The color of the first line of text
       color2: The color of the text
-      Prenom: First name
-      Nom: Last name
-      text3: The text that will be displayed on the image
+      first_name: First name
+      last_name: Last name
+      role: The text that will be displayed on the image
+      is_staff: Indicates if the image is for staff format
 
     Returns:
       The background image with the text added to it.
     """
-    add_text(background, color1, first_name, last_name, TITLE_FONT, 45, is_staff, True)
-    add_text(background, color2, role, '', TEXT_FONT, 25, is_staff, False)
-    return background
+
+    image = Image.open(background_file_name)
+    add_text(image, color1, first_name, last_name,
+             TITLE_FONT, 45, is_staff, True)
+    add_text(image, color2, role, '', TEXT_FONT, 25, is_staff, False)
+    file_name = f'{OUTPUT_DIR}/Badge {first_name} {last_name}.png'
+    image.save(file_name)
 
 
-# Fonction principale
-def main(type):
+def create_badges_by_type(type: str):
     """Open the Excel file, reads the data, and generates the badges
-    
+
     Args:
       type: The type of badge you want to create.
     """
+
     settings = TYPES_SETTINGS[type]
     document = xlrd.open_workbook(DATA_FILE_NAME)
     sheet = document.sheet_by_index(settings["sheet_index"])
@@ -152,9 +184,8 @@ def main(type):
         first_name = sheet.cell_value(rowx=r, colx=0)
         last_name = sheet.cell_value(rowx=r, colx=1)
         role = sheet.cell_value(rowx=r, colx=2)
-        image = Image.open(background_file_name)
-        image = write_image(
-            image,
+        create_image(
+            background_file_name,
             primary_color,
             SECONDARY_COLOR,
             first_name,
@@ -162,53 +193,62 @@ def main(type):
             role,
             type == "staff"
         )
-        file_name = f'{OUTPUT_DIR}/Badge {first_name} {last_name}.png'
-        image.save(file_name)
 
 
-# Commande lors de l'exécution du programme
+def create_all_badges():
+    """Create all the badges from the excel document"""
+
+    for type in TYPES_SETTINGS:
+        create_badges_by_type(type)
+
+
+def create_one_badge():
+    """Create one badge with custom data."""
+
+    first_name = input('Prénom: ')
+    last_name = input('Nom en Majuscule: ')
+    print("Choisissez le type de badge à créer :")
+    for type in TYPES_SETTINGS:
+        print(f"\t* {type}")
+    # lire le choix
+    type = input('Entrez le type choisi : ')
+    if type not in TYPES_SETTINGS:
+        raise Exception("CHOIX INVALIDE !")
+    # définir les paramètres
+    settings = TYPES_SETTINGS[type]
+    primary_color = settings["color"]
+    background_file_name = settings["bg"]
+    role = ""
+    if type == "staff":  # Equipe Organisatrice
+        role = input('Entrez le rôle: ')
+    if type == "entreprise":  # Entreprise
+        role = input('Entrez le nom de l’entreprise : ')
+    # créer l'image
+    create_image(
+        background_file_name,
+        primary_color,
+        SECONDARY_COLOR,
+        first_name,
+        last_name,
+        role,
+        type == "staff"
+    )
+
+
+# script uniquement appelé lorsque ce fichier est directement exécuté
 if __name__ == '__main__':
-    print('Vous avez plusieurs possibilités de commande : \n 1 : Création de badges pour les chauffeurs uniquement \n 2 : Création de badges pour les pilotes uniquement \n 3 : Création de badges pour l’équipe organisatrice uniquement \n 4 : Création de badges pour les entreprises uniquement \n 5 : Création de badges pour tout le monde \n 6 : Création de badge pour une seule personne')
-    input_cmd = input("Entrez votre commande: ")
-    if input_cmd == '1': main("chauffeur")
-    elif input_cmd == '2': main("pilote")
-    elif input_cmd == '3': main("staff")
-    elif input_cmd == '4': main("entreprise")
-    elif input_cmd == '5':  # Tout l'excel
-        for type in TYPES_SETTINGS:
-            main(type)
-    elif input_cmd == '6':  # Un seul nom
-        first_name = input('Prénom: ')
-        last_name = input('Nom en Majuscule: ')
-        print('Vous avez plusieurs possibilités de commande : \n 1 : Chauffeur \n 2 : Pilote \n 3 : Equipe Organisatrice \n 4 : Entreprise')
-        # lire le choix
-        input_type = input('Entrez votre commande : ')
-        if input_type == '1': type = "chauffeur"
-        elif input_type == '2': type = "pilote"
-        elif input_type == "3": type = "staff"
-        elif input_type == '4': type = "entreprise"
-        else: raise Exception("Choix invalide !")
-        # définir les paramètres
-        settings = TYPES_SETTINGS[type]
-        primary_color = settings["color"]
-        background_file_name = settings["bg"]
-        role = ""
-        if input_type == '3':  # Equipe Organisatrice
-            role = input('Entrez le rôle: ')
-        if input_type == '4':  # Entreprise
-            text3 = input('Entrez le nom de l’entreprise : ')
-        # créer l'image
-        image = Image.open(background_file_name)
-        image = write_image(
-            image,
-            primary_color,
-            SECONDARY_COLOR,
-            first_name,
-            last_name,
-            role,
-            type == "staff"
-        )
-        file_name = f'Badge {first_name} {last_name}.png'
-        image.save(file_name)
+    print("Choisissez le type de badges à créer à partir du fichier source :")
+    for type in TYPES_SETTINGS:
+        print(f"\t* {type}")
+    print("\t* all")
+    print("\t* custom")
+    input_cmd = input("Entrez votre choix: ")
+    if input_cmd == "custom":
+        create_one_badge()
+    elif input_cmd == "all":
+        create_all_badges()
+    elif input_cmd in TYPES_SETTINGS:
+        create_badges_by_type(input_cmd)
     else:
-        raise Exception("Choix invalide ! Veuillez entrez un nombre entre 1 et 6.")
+        raise Exception("CHOIX INVALIDE !")
+    print(f"Badges créés dans le dossier '{OUTPUT_DIR}'")
