@@ -22,4 +22,7 @@ entreprises pour le Forum Atlantique
 
 # Utilisation
 
-* Lancez le script python
+* Pour générer les images au format PNG depuis le fichier excel :
+    ```bash
+    python3 create_badges.py
+    ```
