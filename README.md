@@ -20,9 +20,9 @@ entreprises pour le Forum Atlantique
 > python3 -m pip install <nom-de-la-library>
 > ```
 
-# Utilisation
+## Utilisation
 
-## Générer les images PNG :
+### Générer les images PNG :
 
 * Dans le fichier `create_badges.py`, modifiez le nom du fichier excel d'entrée.
 * Exécutez la commande :
@@ -32,7 +32,7 @@ entreprises pour le Forum Atlantique
 * Suivez les instructions dans le terminal
 * Les images au format PNG apparaissent dans le dossier `badges/` (par défaut)
 
-## Générer le PDF
+### Générer le PDF
 
 * Dans le fichier `create_badges.py`, modifiez le nom du fichier excel d'entrée.
 * Exécutez la commande :
