@@ -1,3 +1,4 @@
 env/
 badges/
 __pycache__/
+.vscode/
