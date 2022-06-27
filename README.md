@@ -22,7 +22,7 @@ entreprises pour le Forum Atlantique
 
 ## Utilisation
 
-### Générer les images PNG :
+### Générer les images PNG
 
 * Dans le fichier `create_badges.py`, modifiez le nom du fichier excel d'entrée.
 * Exécutez la commande :
