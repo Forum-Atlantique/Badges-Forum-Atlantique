@@ -1,6 +1,9 @@
-# Importation des modules
 from PIL import Image, ImageDraw, ImageFont  # Module pour les images
 import xlrd  # module pour ouvrir l'excel
+import os
+
+# Be sure to set the correct current directory
+os.chdir(os.path.dirname(__file__))
 
 # colors
 dark_blue = (27, 53, 81)

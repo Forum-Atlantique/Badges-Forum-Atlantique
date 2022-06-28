@@ -1,8 +1,12 @@
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from create_badges import create_all_badges
+import os
 
 OUTPUT_FILE = "badges_FA.pdf"
+
+# Be sure to set the correct current directory
+os.chdir(os.path.dirname(__file__))
 
 # Reportlab uses the "point" unit. We convert it to cm for usability :
 PAGE_WIDTH, PAGE_HEIGHT = A4
