@@ -53,3 +53,7 @@ Ci-dessous une liste d'améliorations possibles pour le projet :
 * super-bonus : générer tout le texte directement sur le PDF et ne plus utiliser
     d'images intermédiaires (ça permettra d'avoir un format vectoriel pour le
     PDF et donc une bien meilleure qualité)
+
+## Contact
+
+Vous faites partie de l'équipe du Forum Atlantique et vous souhaiteriez contribuer au projet ? Envoie-moi un mail (cf mon profil) et on vois ça ;)
