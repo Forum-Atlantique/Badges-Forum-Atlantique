@@ -7,7 +7,7 @@ os.chdir(os.path.dirname(__file__))
 
 # colors
 dark_blue = (27, 53, 81)
-light_blue = (93, 188, 210)
+light_blue = (70,177,242)
 blue = (23, 114, 237)
 orange = (249, 174, 12)
 dark_orange = (255, 111, 0)
@@ -44,7 +44,7 @@ TYPES_SETTINGS = {
     },
     "entreprise": {
         "sheet_index": 3,
-        "color": dark_blue,
+        "color": light_blue,
         "bg": "backgrounds/entreprise.png",
     }
 }
