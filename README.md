@@ -56,4 +56,6 @@ Ci-dessous une liste d'améliorations possibles pour le projet :
 
 ## Contact
 
-Vous faites partie de l'équipe du Forum Atlantique et vous souhaiteriez contribuer au projet ? Envoie-moi un mail (cf mon profil) et on vois ça ;)
+Vous faites partie de l'équipe du Forum Atlantique et vous souhaiteriez contribuer au projet ? Contactez directement les contributeurs du projet :
+* [@hydrielax](https://github.com/hydrielax)
+* [@LeRatDuFA](https://github.com/LeRatDuFA)
