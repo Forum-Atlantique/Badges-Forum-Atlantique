@@ -3,7 +3,7 @@ import xlrd  # module pour ouvrir l'excel
 import os
 
 # Be sure to set the correct current directory
-os.chdir(os.path.dirname(__file__))
+os.chdir(os.path.dirname(__file__)
 
 # colors
 dark_blue = (27, 53, 81)
@@ -143,6 +143,7 @@ def create_image(
     last_name: str,
     role: str,
     is_staff: bool,
+    is_entreprise : bool,
     save_file: bool = True
 ):
     """
@@ -165,9 +166,14 @@ def create_image(
 
     image = Image.open(background_file_name)
     last_name = last_name.upper() # convert as uppercase
-    add_text(image, color1, first_name, last_name,
+    if (is_entreprise):
+        add_text(image, color1, first_name, last_name,
+             TITLE_FONT, 90, is_staff, True)
+        add_text(image, color2, role, '', TITLE_FONT, 50, is_staff, False)
+    else:
+        add_text(image, color1, first_name, last_name,
              TITLE_FONT, 45, is_staff, True)
-    add_text(image, color2, role, '', TEXT_FONT, 25, is_staff, False)
+        add_text(image, color2, role, '', TEXT_FONT, 25, is_staff, False)
     file_name = f'{OUTPUT_DIR}/Badge {first_name} {last_name}.png'
     if save_file:
         image.save(file_name)
@@ -191,7 +197,10 @@ def create_badges_by_type(type: str, save_file = True):
     for r in range(1, nb_rows):
         first_name = sheet.cell_value(rowx=r, colx=0)
         last_name = sheet.cell_value(rowx=r, colx=1)
-        role = sheet.cell_value(rowx=r, colx=2)
+        if type == "staff" or type == "entreprise" :
+            role = sheet.cell_value(rowx=r, colx=2)
+        else :
+            role = ""
         image = create_image(
             background_file_name,
             primary_color,
@@ -200,6 +209,7 @@ def create_badges_by_type(type: str, save_file = True):
             last_name,
             role,
             type == "staff",
+            type == "entreprise",
             save_file
         )
         images.append(image)
